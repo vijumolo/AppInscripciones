@@ -5,7 +5,8 @@ import type { EventConfig, Participant } from '../types';
 import { Input } from '../components/Input';
 import { Select } from '../components/Select';
 import { Button } from '../components/Button';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const Home = () => {
     const [eventDetails, setEventDetails] = useState<EventConfig | null>(null);
@@ -168,6 +169,15 @@ export const Home = () => {
                 <p className="max-w-2xl mx-auto text-xl text-slate-600 whitespace-pre-line">
                     {eventDetails.eventDescription}
                 </p>
+                <div className="pt-4 flex justify-center">
+                    <Link
+                        to="/registrations"
+                        className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-full transition-all border border-brand-200 shadow-sm hover:shadow-md"
+                    >
+                        <Users className="w-5 h-5" />
+                        Ver Lista de Deportistas Inscritos
+                    </Link>
+                </div>
             </div>
 
             <div className="glass p-6 sm:p-10 rounded-3xl shadow-2xl mt-12 relative overflow-hidden">
