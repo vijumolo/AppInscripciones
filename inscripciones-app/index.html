@@ -95,6 +95,11 @@
 </head>
 
 <body>
+    <script>
+      window.addEventListener('error', function(event) {
+        document.body.innerHTML += '<div style="color:red; background:white; position:fixed; top:0; left:0; width:100vw; height:50vh; z-index:9999; padding:20px; font-family:monospace; overflow:auto;">❌ ERROR: ' + event.message + '<br/><pre>' + event.filename + ':' + event.lineno + '</pre></div>';
+      });
+    </script>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

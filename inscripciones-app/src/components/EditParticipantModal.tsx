@@ -54,7 +54,9 @@ export const EditParticipantModal: React.FC<EditParticipantModalProps> = ({ part
                     category: data.category,
                     licensenumber: data.licensenumber,
                     club: data.club,
-                    sponsor: data.sponsor
+                    sponsor: data.sponsor,
+                    payment_method: data.payment_method,
+                    payment_id: data.payment_id
                 })
                 .eq('id', participant.id);
 
@@ -104,6 +106,10 @@ export const EditParticipantModal: React.FC<EditParticipantModalProps> = ({ part
 
                             <Select label="Género" options={[{ value: 'M', label: 'Masculino' }, { value: 'F', label: 'Femenino' }]} register={register('gender', { required: 'Requerido' })} error={errors.gender?.message} />
                             <Select label="Categoría" options={categoryOptions} register={register('category', { required: 'Requerido' })} error={errors.category?.message} />
+                            
+                            <Select label="Método de Pago (Opcional)" options={[{ value: '', label: 'Sin Método' }, { value: 'Nequi', label: 'Nequi' }, { value: 'Daviplata', label: 'Daviplata' }, { value: 'Efectivo', label: 'Efectivo' }]} register={register('payment_method')} />
+                            <Input label="Referencia de Pago (Opcional)" register={register('payment_id')} />
+                            
                             <Input label="Licencia (Opcional)" register={register('licensenumber')} />
                             <Input label="Club (Opcional)" register={register('club')} />
                             <Input label="Patrocinador (Opcional)" register={register('sponsor')} />

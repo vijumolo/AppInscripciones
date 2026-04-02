@@ -19,8 +19,11 @@ export const Home = () => {
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors },
     } = useForm<Participant>();
+
+    const watchPaymentMethod = watch('payment_method');
 
     useEffect(() => {
         fetchEventDetails();
@@ -42,7 +45,9 @@ export const Home = () => {
                 eventName: data.eventname || data.event_name || data.eventName || '',
                 eventDescription: data.eventdescription || data.event_description || data.eventDescription || '',
                 activeCategories: data.activecategories || data.active_categories || data.activeCategories || [],
-                registration_close_date: data.registration_close_date || data.close_date || ''
+                registration_close_date: data.registration_close_date || data.close_date || '',
+                nequi_number: data.nequi_number || '',
+                daviplata_number: data.daviplata_number || '',
             };
 
             setEventDetails(mappedEvent);
@@ -309,6 +314,65 @@ export const Home = () => {
                                 register={register('sponsor')}
                             />
                         </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-medium text-slate-900 border-b pb-2 mb-4">Información de Pago</h3>
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            <Select
+                                label="Método de Pago"
+                                required
+                                options={[
+                                    { value: '', label: 'Selecciona una opción...' },
+                                    { value: 'Nequi', label: 'Nequi' },
+                                    { value: 'Daviplata', label: 'Daviplata' },
+                                ]}
+                                register={register('payment_method', { required: 'Selecciona un método de pago' })}
+                                error={errors.payment_method?.message}
+                            />
+
+                            <Input
+                                label="Referencia o ID del Pago"
+                                placeholder="Ej. 123456789"
+                                required={watchPaymentMethod === 'Nequi' || watchPaymentMethod === 'Daviplata'}
+                                register={register('payment_id', {
+                                    required: (watchPaymentMethod === 'Nequi' || watchPaymentMethod === 'Daviplata') ? 'El ID de pago es obligatorio' : false
+                                })}
+                                error={errors.payment_id?.message}
+                            />
+                        </div>
+
+                        {watchPaymentMethod === 'Nequi' && eventDetails.nequi_number && (
+                            <div className="mt-6 p-5 rounded-2xl bg-gradient-to-r from-fuchsia-50 to-pink-50 border border-fuchsia-100 shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-4 animate-fade-in relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+                                <div className="flex-shrink-0 mt-1 bg-white p-2 rounded-xl shadow-sm border border-fuchsia-100 z-10">
+                                    <div className="font-bold text-fuchsia-600 tracking-tight flex items-center justify-center w-12 h-8">NEQUI</div>
+                                </div>
+                                <div className="text-center sm:text-left z-10">
+                                    <p className="text-fuchsia-900 font-medium">Realiza tu transferencia Nequi al número:</p>
+                                    <div className="text-fuchsia-600 font-extrabold text-3xl tracking-widest my-1 drop-shadow-sm">
+                                        {eventDetails.nequi_number}
+                                    </div>
+                                    <p className="text-sm text-fuchsia-800/70">Una vez realizada, ingresa el número de comprobante o ID de transacción completo en la casilla superior para validar tu inscripción.</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {watchPaymentMethod === 'Daviplata' && eventDetails.daviplata_number && (
+                            <div className="mt-6 p-5 rounded-2xl bg-gradient-to-r from-red-50 to-rose-50 border border-red-100 shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-4 animate-fade-in relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full -mr-10 -mt-10 blur-xl"></div>
+                                <div className="flex-shrink-0 mt-1 bg-white p-2 rounded-xl shadow-sm border border-red-100 z-10">
+                                    <div className="font-bold text-red-600 tracking-tight flex items-center justify-center px-1 h-8 text-xs">DAVIPLATA</div>
+                                </div>
+                                <div className="text-center sm:text-left z-10">
+                                    <p className="text-red-900 font-medium">Realiza tu transferencia Daviplata al número:</p>
+                                    <div className="text-red-600 font-extrabold text-3xl tracking-widest my-1 drop-shadow-sm">
+                                        {eventDetails.daviplata_number}
+                                    </div>
+                                    <p className="text-sm text-red-800/70">Una vez ejecutada la transacción, anota el código de aprobación detallado en la casilla de Referencia.</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="pt-4 flex justify-end">

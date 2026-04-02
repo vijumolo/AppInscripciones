@@ -4,6 +4,8 @@ export interface EventConfig {
     eventDescription: string;
     activeCategories: string[];
     registration_close_date: string;
+    nequi_number?: string;
+    daviplata_number?: string;
 }
 
 export interface Participant {
@@ -19,5 +21,7 @@ export interface Participant {
     gender: 'M' | 'F';
     email: string;
     mobile: string;
+    payment_method?: 'Nequi' | 'Daviplata' | string;
+    payment_id?: string;
     registration_date?: string;
 }

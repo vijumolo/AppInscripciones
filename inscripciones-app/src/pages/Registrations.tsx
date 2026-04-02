@@ -4,6 +4,7 @@ import type { Participant, EventConfig } from '../types';
 import { Select } from '../components/Select';
 import { EditParticipantModal } from '../components/EditParticipantModal';
 import { Search, Users, Trophy, Activity, ArrowUpDown, Edit2 } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 export const Registrations = () => {
     const [participants, setParticipants] = useState<Participant[]>([]);
@@ -131,6 +132,11 @@ export const Registrations = () => {
         return { total, byCategory };
     }, [participants]);
 
+    const pieChartData = useMemo(() => {
+        return Object.entries(stats.byCategory).map(([name, value]) => ({ name, value }));
+    }, [stats]);
+
+    const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#eab308'];
 
     if (loading) {
         return (
@@ -208,30 +214,36 @@ export const Registrations = () => {
                 </div>
             </div>
 
-            {/* Gráfico de Distribución (Barras) */}
+            {/* Gráfico de Distribución (Pastel) */}
             {stats.total > 0 && (
-                <div className="glass p-6 rounded-2xl">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-4 border-b pb-2">Distribución por Categorías</h3>
-                    <div className="space-y-4">
-                        {Object.entries(stats.byCategory)
-                            .sort((a, b) => b[1] - a[1])
-                            .map(([category, count]) => {
-                                const percentage = Math.round((count / stats.total) * 100);
-                                return (
-                                    <div key={category} className="group">
-                                        <div className="flex justify-between text-sm mb-1">
-                                            <span className="font-medium text-slate-700">{category}</span>
-                                            <span className="text-slate-500 font-mono">{count} inscritos ({percentage}%)</span>
-                                        </div>
-                                        <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                                            <div
-                                                className="bg-brand-500 h-2.5 rounded-full transition-all duration-1000 ease-out group-hover:bg-brand-400"
-                                                style={{ width: `${percentage}%` }}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                <div className="glass p-6 rounded-3xl shadow-sm min-h-[400px]">
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 text-center border-b pb-4">Distribución por Categorías</h3>
+                    <div className="w-full h-72">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={pieChartData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={80}
+                                    outerRadius={110}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                    animationBegin={200}
+                                    animationDuration={1000}
+                                    label={({ name, percent }: any) => `${name} (${((percent || 0) * 100).toFixed(0)}%)`}
+                                >
+                                    {pieChartData.map((_entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    formatter={(value: any) => [value, 'Inscritos']}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
             )}

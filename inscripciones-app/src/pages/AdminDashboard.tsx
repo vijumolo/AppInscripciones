@@ -8,6 +8,7 @@ import { LogOut, Save, Download, Trash2, Plus, X, AlertTriangle, Edit, Search } 
 import { EditParticipantModal } from '../components/EditParticipantModal';
 import * as XLSX from 'xlsx';
 import toast, { Toaster } from 'react-hot-toast';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 export const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -52,7 +53,9 @@ export const AdminDashboard = () => {
                     eventName: eventData.eventname || eventData.event_name || eventData.eventName || '',
                     eventDescription: eventData.eventdescription || eventData.event_description || eventData.eventDescription || '',
                     activeCategories: eventData.activecategories || eventData.active_categories || eventData.activeCategories || [],
-                    registration_close_date: eventData.registration_close_date || eventData.close_date || ''
+                    registration_close_date: eventData.registration_close_date || eventData.close_date || '',
+                    nequi_number: eventData.nequi_number || '',
+                    daviplata_number: eventData.daviplata_number || ''
                 };
                 setEventConfig(mappedEvent);
             }
@@ -91,7 +94,9 @@ export const AdminDashboard = () => {
                     eventname: eventConfig.eventName,
                     eventdescription: eventConfig.eventDescription,
                     activecategories: eventConfig.activeCategories,
-                    registration_close_date: eventConfig.registration_close_date
+                    registration_close_date: eventConfig.registration_close_date,
+                    nequi_number: eventConfig.nequi_number,
+                    daviplata_number: eventConfig.daviplata_number
                 })
                 .eq('id', eventConfig.id);
 
@@ -157,7 +162,9 @@ export const AdminDashboard = () => {
                 'Categoría': p.category,
                 'Licencia': p.licensenumber || '',
                 'Club': p.club || '',
-                'Patrocinador': p.sponsor || ''
+                'Patrocinador': p.sponsor || '',
+                'Método de Pago': p.payment_method || 'N/A',
+                'ID de Pago': p.payment_id || 'N/A'
             }));
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -240,6 +247,15 @@ export const AdminDashboard = () => {
         );
     }, [participants, searchTerm]);
 
+    const categoryStats = useMemo(() => {
+        const stats: Record<string, number> = {};
+        participants.forEach(p => {
+            const cat = p.category || 'Sin Categoría';
+            stats[cat] = (stats[cat] || 0) + 1;
+        });
+        return Object.entries(stats).map(([name, value]) => ({ name, value }));
+    }, [participants]);
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -248,8 +264,12 @@ export const AdminDashboard = () => {
         );
     }
 
+
+
+    const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#eab308'];
+
     return (
-        <div className="space-y-8 max-w-5xl mx-auto animate-fade-in relative pb-10">
+        <div className="space-y-8 max-w-7xl mx-auto animate-fade-in relative pb-10">
             <Toaster position="top-right" />
 
             <div className="flex items-center justify-between border-b pb-6">
@@ -329,6 +349,24 @@ export const AdminDashboard = () => {
                                         </Button>
                                     </div>
                                 </div>
+                                
+                                <div className="pt-4 border-t border-slate-100">
+                                    <h3 className="text-sm font-bold text-slate-900 mb-4">Cuentas de Recaudo (Pagos)</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <Input
+                                            label="Número Nequi"
+                                            placeholder="Ej. 3001234567"
+                                            value={eventConfig.nequi_number || ''}
+                                            onChange={(e) => setEventConfig({ ...eventConfig, nequi_number: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Número Daviplata"
+                                            placeholder="Ej. 3001234567"
+                                            value={eventConfig.daviplata_number || ''}
+                                            onChange={(e) => setEventConfig({ ...eventConfig, daviplata_number: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         ) : (
                             <div className="p-4 bg-yellow-50 text-yellow-800 rounded-lg flex gap-3">
@@ -378,6 +416,40 @@ export const AdminDashboard = () => {
                 </div>
             </div>
 
+            {participants.length > 0 && (
+                <div className="glass p-6 rounded-3xl shadow-sm min-h-[350px]">
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 text-center">Distribución por Categorías</h3>
+                    <div className="w-full h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={categoryStats}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={70}
+                                    outerRadius={100}
+                                    fill="#8884d8"
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                    animationBegin={200}
+                                    animationDuration={1000}
+                                    label={({ name, percent }: any) => `${name} (${((percent || 0) * 100).toFixed(0)}%)`}
+                                >
+                                    {categoryStats.map((_entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    formatter={(value: any) => [value, 'Inscritos']}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            )}
+
             {/* Gestión de Participantes */}
             <div className="mt-8 glass p-6 sm:p-8 rounded-3xl space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-5">
@@ -406,6 +478,7 @@ export const AdminDashboard = () => {
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Documento</th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Participante</th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Categoría</th>
+                                <th scope="col" className="px-6 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wider">Pago</th>
                                 <th scope="col" className="px-6 py-3 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider">Acciones</th>
                             </tr>
                         </thead>
@@ -424,6 +497,18 @@ export const AdminDashboard = () => {
                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
                                                 {p.category}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                                            {p.payment_method ? (
+                                                <div className="flex flex-col items-center">
+                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.payment_method === 'Nequi' ? 'bg-fuchsia-100 text-fuchsia-800' : p.payment_method === 'Daviplata' ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-800'}`}>
+                                                        {p.payment_method}
+                                                    </span>
+                                                    <span className="text-[10px] text-slate-400 mt-1">{p.payment_id}</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-300 text-xs">-</span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div className="flex items-center justify-end gap-2">
