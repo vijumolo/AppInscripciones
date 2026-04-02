@@ -1,0 +1,4 @@
+[build]
+  base = "inscripciones-app"
+  publish = "dist"
+  command = "npm run build"
