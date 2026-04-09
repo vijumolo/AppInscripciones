@@ -135,8 +135,7 @@ export const Registrations = () => {
     const pieChartData = useMemo(() => {
         return Object.entries(stats.byCategory).map(([name, value]) => ({ name, value }));
     }, [stats]);
-
-    const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#eab308'];
+    const PIE_COLORS = ['#06b6d4', '#0ea5e9', '#6366f1', '#14b8a6', '#8b5cf6', '#d946ef', '#f43f5e', '#f59e0b'];
 
     if (loading) {
         return (
