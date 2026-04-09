@@ -324,7 +324,21 @@ export const Registrations = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <button
-                                                    onClick={() => setEditingParticipant(participant)}
+                                                    onClick={() => {
+                                                        const receipt = window.prompt("Por seguridad, ingresa el número de comprobante de pago (Referencia o ID) que utilizaste al inscribirte:");
+                                                        if (receipt === null) return;
+                                                        
+                                                        const savedId = participant.payment_id?.trim().toLowerCase() || "";
+                                                        const inputId = receipt.trim().toLowerCase();
+                                                        
+                                                        if (savedId && inputId === savedId) {
+                                                            setEditingParticipant(participant);
+                                                        } else if (!savedId && inputId === "") {
+                                                            setEditingParticipant(participant);
+                                                        } else {
+                                                            alert("Acceso Denegado: El comprobante ingresado no coincide con el registrado en el sistema. Consulta tu mensaje de confirmación de WhatsApp.");
+                                                        }
+                                                    }}
                                                     className="text-brand-600 hover:text-brand-900 bg-brand-50 hover:bg-brand-100 p-2 rounded-lg transition-colors inline-flex items-center gap-2"
                                                     title="Editar Registro"
                                                 >

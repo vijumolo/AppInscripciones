@@ -122,13 +122,10 @@ export const Home = () => {
     }
 
     if (success && registeredData) {
+        const docInfo = `*Tus datos de registro:*\n👤 Nombre: ${registeredData.fullname}\n🆔 Documento: ${registeredData.documentnumber}\n🏷️ Categoría: ${registeredData.category}\n💳 Pago: ${registeredData.payment_method || 'Ninguno'} - Ref: ${registeredData.payment_id || 'N/A'}\n\n`;
         const whatsappMessage = encodeURIComponent(
-            `*COMPROBANTE DE INSCRIPCIÓN* 🏆\n` +
-            `¡Hola ${registeredData.fullname}! Te has inscrito exitosamente a *${eventDetails.eventName}*.\n\n` +
-            `*Tus datos de registro:*\n` +
-            `👤 Nombre: ${registeredData.fullname}\n` +
-            `🆔 Documento: ${registeredData.documentnumber}\n` +
-            `🏷️ Categoría: ${registeredData.category}\n\n` +
+            `*COMPROBANTE DE INSCRIPCIÓN* 🏆\n¡Hola ${registeredData.fullname}! Te has inscrito exitosamente a *${eventDetails.eventName}*.\n\n` +
+            docInfo +
             `Guarda este mensaje como constancia de tu registro oficial.`
         );
         const whatsappUrl = `https://wa.me/${registeredData.mobile.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;

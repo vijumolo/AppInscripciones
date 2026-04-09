@@ -369,9 +369,43 @@ export const AdminDashboard = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="p-4 bg-yellow-50 text-yellow-800 rounded-lg flex gap-3">
-                                <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                                <p>No se encontró una configuración de evento activa. Asegúrate de ejecutar el script SQL primero.</p>
+                            <div className="space-y-4">
+                                <div className="p-4 bg-yellow-50 text-yellow-800 rounded-lg flex gap-3">
+                                    <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                                    <p>No se encontró una configuración de evento activa. La base de datos está vacía.</p>
+                                </div>
+                                <Button 
+                                    onClick={async () => {
+                                        setSaving(true);
+                                        try {
+                                            const { data, error } = await supabase.from('event_config').insert([{
+                                                eventname: 'Nuevo Evento Deportivo',
+                                                eventdescription: 'Añade tu descripción aquí.',
+                                                activecategories: ['Élite', 'Abierta'],
+                                            }]).select().single();
+                                            if (error) throw error;
+                                            
+                                            setEventConfig({
+                                                id: data.id,
+                                                eventName: data.eventname || '',
+                                                eventDescription: data.eventdescription || '',
+                                                activeCategories: data.activecategories || [],
+                                                registration_close_date: data.registration_close_date || '',
+                                                nequi_number: data.nequi_number || '',
+                                                daviplata_number: data.daviplata_number || ''
+                                            });
+                                            toast.success('Configuración inicializada');
+                                        } catch(e) {
+                                            console.error(e);
+                                            toast.error('Error inicializando. ¿Tienes los permisos RLS en la tabla?');
+                                        } finally {
+                                            setSaving(false);
+                                        }
+                                    }}
+                                    isLoading={saving}
+                                >
+                                    ¡Crear Configuración Inicial!
+                                </Button>
                             </div>
                         )}
                     </div>
@@ -514,7 +548,7 @@ export const AdminDashboard = () => {
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
                                                     onClick={() => setEditingParticipant(p)}
-                                                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    className="p-1.5 text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                                                     title="Editar"
                                                 >
                                                     <Edit className="h-4 w-4" />

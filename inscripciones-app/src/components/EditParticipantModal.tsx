@@ -107,8 +107,8 @@ export const EditParticipantModal: React.FC<EditParticipantModalProps> = ({ part
                             <Select label="Género" options={[{ value: 'M', label: 'Masculino' }, { value: 'F', label: 'Femenino' }]} register={register('gender', { required: 'Requerido' })} error={errors.gender?.message} />
                             <Select label="Categoría" options={categoryOptions} register={register('category', { required: 'Requerido' })} error={errors.category?.message} />
                             
-                            <Select label="Método de Pago (Opcional)" options={[{ value: '', label: 'Sin Método' }, { value: 'Nequi', label: 'Nequi' }, { value: 'Daviplata', label: 'Daviplata' }, { value: 'Efectivo', label: 'Efectivo' }]} register={register('payment_method')} />
-                            <Input label="Referencia de Pago (Opcional)" register={register('payment_id')} />
+                            <Select label="Método de Pago" options={[{ value: '', label: 'Seleccione un método...' }, { value: 'Nequi', label: 'Nequi' }, { value: 'Daviplata', label: 'Daviplata' }]} register={register('payment_method', { required: 'Obligatorio' })} error={errors.payment_method?.message} />
+                            <Input label="Referencia de Pago" register={register('payment_id', { required: 'Obligatorio' })} error={errors.payment_id?.message} />
                             
                             <Input label="Licencia (Opcional)" register={register('licensenumber')} />
                             <Input label="Club (Opcional)" register={register('club')} />
