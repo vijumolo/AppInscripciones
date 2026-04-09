@@ -199,8 +199,8 @@ export const Registrations = () => {
 
                 <div className="glass overflow-hidden rounded-2xl p-6">
                     <div className="flex items-center">
-                        <div className="flex-shrink-0 bg-purple-100 rounded-xl p-3">
-                            <Trophy className="h-6 w-6 text-purple-600" />
+                        <div className="flex-shrink-0 bg-brand-100 rounded-xl p-3">
+                            <Trophy className="h-6 w-6 text-brand-600" />
                         </div>
                         <div className="ml-5 w-0 flex-1">
                             <dl>
