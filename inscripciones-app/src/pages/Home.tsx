@@ -331,9 +331,9 @@ export const Home = () => {
                             <Input
                                 label="Referencia o ID del Pago"
                                 placeholder="Ej. 123456789"
-                                required={watchPaymentMethod === 'Nequi' || watchPaymentMethod === 'Daviplata'}
+                                required
                                 register={register('payment_id', {
-                                    required: (watchPaymentMethod === 'Nequi' || watchPaymentMethod === 'Daviplata') ? 'El ID de pago es obligatorio' : false
+                                    required: 'El ID de pago es obligatorio'
                                 })}
                                 error={errors.payment_id?.message}
                             />
